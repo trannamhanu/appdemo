@@ -9,18 +9,19 @@ import com.mongodb.ServerAddress;
 
 import util.Constant;
 
+@SuppressWarnings("deprecation")
 public class MongoConnection {
 
 	private static DB demoDB;
 	private static MongoClient mongoClient;
 
 	static {
-		MongoCredential credential = MongoCredential.createCredential(Constant.MONGO_USER, Constant.MONGO_DB_AUTH,
-				Constant.MONGO_PASSWORD.toCharArray());
+		MongoCredential credential = MongoCredential.createCredential(Constant.DB_CONFIG.MONGO_USER, Constant.DB_CONFIG.MONGO_DB_AUTH,
+				Constant.DB_CONFIG.MONGO_PASSWORD.toCharArray());
 
-		mongoClient = new MongoClient(new ServerAddress(Constant.MONGO_HOST, Constant.MONGO_PORT),
+		mongoClient = new MongoClient(new ServerAddress(Constant.DB_CONFIG.MONGO_HOST, Constant.DB_CONFIG.MONGO_PORT),
 				Arrays.asList(credential));
-		demoDB = mongoClient.getDB(Constant.DBNAME);
+		demoDB = mongoClient.getDB(Constant.DB_CONFIG.DBNAME);
 
 	}
 

@@ -24,6 +24,7 @@ public class User implements JsonEntity {
 		this.password = password;
 	}
 
+	@SuppressWarnings("unchecked")
 	public JSONObject toJsonObject() {
 		JSONObject object = new JSONObject();
 		if (this.name != null) {

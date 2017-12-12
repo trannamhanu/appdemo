@@ -29,6 +29,7 @@ public class Comment implements JsonEntity {
 		this.content = content;
 	}
 
+	@SuppressWarnings("unchecked")
 	public JSONObject toJsonObject() {
 		JSONObject object = new JSONObject();
 		if (this.userId != null) {

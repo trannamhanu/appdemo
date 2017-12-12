@@ -37,6 +37,7 @@ public class Post implements JsonEntity {
 		this.listComment = listComment;
 	}
 
+	@SuppressWarnings("unchecked")
 	public JSONObject toJsonObject() {
 		JSONObject object = new JSONObject();
 
