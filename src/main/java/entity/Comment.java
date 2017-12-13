@@ -1,24 +1,21 @@
 package entity;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.json.simple.JSONObject;
 
-import util.Constant;
+import util.Util;
 
 public class Comment implements JsonEntity {
 
 	private static final String USERID_KEY = "user_id";
-	private String userId;
+	public String userId;
 
 	private static final String CONTENT_KEY = "content";
-	private String content;
+	public String content;
 
 	private static final String TIME_KEY = "time";
-	private Date createTime;
-
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(Constant.DATE_FORMAT);
+	public Date createTime;
 
 	public Comment() {
 
@@ -39,25 +36,10 @@ public class Comment implements JsonEntity {
 			object.put(CONTENT_KEY, this.content);
 		}
 		if (this.createTime != null) {
-			object.put(TIME_KEY, dateFormat.format(createTime));
+			object.put(TIME_KEY, Util.formatStringDate(this.createTime));
 		}
 		return object;
 	}
 
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
 
 }

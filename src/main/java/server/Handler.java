@@ -15,9 +15,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import constant.RequestConstant;
+import constant.ResponseConstant;
 import server.api.APIAdapter;
 import server.api.APIManager;
-import util.Constant;
+import server.response.ErrorResponse;
+import server.response.Response;
 
 public class Handler extends AbstractHandler {
 
@@ -27,7 +30,7 @@ public class Handler extends AbstractHandler {
 		baseRequest.setHandled(true);
 		servletResponse.setContentType("application/json; charset=utf-8");
 		servletResponse.setStatus(HttpServletResponse.SC_OK);
-		Respond respond = null;
+		Response response = null;
 
 		InputStreamReader isr = new InputStreamReader(baseRequest.getInputStream());
 		BufferedReader reader = new BufferedReader(isr);
@@ -39,22 +42,36 @@ public class Handler extends AbstractHandler {
 		try {
 			inputObject = (JSONObject) parser.parse(inputBody);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			System.out.println("Error parsing json");
+			response = new ErrorResponse(ResponseConstant.ResponseCode.BAD_REQUEST_ERROR,
+					ResponseConstant.ResponseCode.BAD_REQUEST_ERROR_DETAIL);
+			writeResponse(response, servletResponse);
+			return;
 		}
 
-		String api = (String) inputObject.get(Constant.REQUEST.API_KEY);
+		String api = (String) inputObject.get(RequestConstant.API_KEY);
 		if (api == null) {
-			respond = new Respond(Constant.RESPONSE.CODE_ERROR, null);
+			response = new ErrorResponse(ResponseConstant.ResponseCode.BAD_REQUEST_ERROR,
+					ResponseConstant.ResponseCode.BAD_REQUEST_ERROR_DETAIL);
 		} else {
 			APIAdapter adapter = APIManager.getAPI(api);
-			respond = adapter.process(inputObject);
+			if (adapter == null) {
+				response = new ErrorResponse(ResponseConstant.ResponseCode.UNKNOWN_API,
+						ResponseConstant.ResponseCode.UNKNOWN_API_DETAIL);
+			} else {
+				response = adapter.process(inputObject);
+			}
 		}
 
+		writeResponse(response, servletResponse);
+
+	}
+	
+	public void writeResponse(Response response, HttpServletResponse servletResponse) throws IOException {
 		OutputStream out = servletResponse.getOutputStream();
-		out.write(respond.toJsonObject().toJSONString().getBytes());
+		out.write(response.toString().getBytes());
 		out.close();
 		out.flush();
-
 	}
 
 }

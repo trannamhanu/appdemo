@@ -1,40 +1,51 @@
 package server.api;
 
+import java.util.UUID;
+
 import org.json.simple.JSONObject;
 
+import constant.CommonConstant;
+import constant.RequestConstant;
+import constant.ResponseConstant;
 import dao.UserDAO;
-import server.Respond;
-import server.TokenManager;
-import util.Constant;
+import server.response.ErrorResponse;
+import server.response.Response;
+import server.response.StringResponse;
+import server.session.Session;
+import server.session.SessionManager;
 
 public class AuthenAPI implements APIAdapter {
 
-	@SuppressWarnings("unchecked")
-	public Respond process(JSONObject json) {
+	public Response process(JSONObject json) {
 		
-		JSONObject query = (JSONObject) json.get(Constant.REQUEST.QUERY_KEY);
+		JSONObject query = (JSONObject) json.get(RequestConstant.QUERY_KEY);
 		if (query == null) {
-			return new Respond(Constant.RESPONSE.CODE_ERROR, null);
+			return new ErrorResponse(ResponseConstant.ResponseCode.BAD_REQUEST_ERROR,
+					ResponseConstant.ResponseCode.BAD_REQUEST_ERROR_DETAIL);
 		}
 		
-		String email = (String) query.get(Constant.REQUEST.EMAIL_KEY);
-		String pass = (String) query.get(Constant.REQUEST.PASSWORD_KEY);
+		String email = (String) query.get(RequestConstant.EMAIL_KEY);
+		String pass = (String) query.get(RequestConstant.PASSWORD_KEY);
 		if (email == null || pass == null) {
-			return new Respond(Constant.RESPONSE.CODE_ERROR, null);
+			return new ErrorResponse(ResponseConstant.ResponseCode.BAD_REQUEST_ERROR,
+					ResponseConstant.ResponseCode.BAD_REQUEST_ERROR_DETAIL);
 		}
 		
 		//check user and generate token
-		String token = UserDAO.userAuthenticate(email, pass);
-		if (token == null) {
-			return new Respond(Constant.RESPONSE.CODE_ERROR, null);
+		String userId = UserDAO.userAuthenticate(email, pass);
+		String token = null;
+		if (userId == null) {
+			return new ErrorResponse(ResponseConstant.ResponseCode.AUTHEN_ERROR,
+					ResponseConstant.ResponseCode.AUTHEN_ERROR_DETAIL);
+		} else {
+			token = UUID.randomUUID().toString();
+			Session session = new Session(token, userId, System.currentTimeMillis() + CommonConstant.SESSION_TIMEOUT);
+			SessionManager.put(session);
 		}
 		
-		TokenManager.put(token);
-		Respond respond = new Respond();
-		respond.code = Constant.RESPONSE.CODE_SUCCESS;
-		respond.data.put(Constant.REQUEST.TOKEN_KEY, token);
+		StringResponse response = new StringResponse(ResponseConstant.ResponseCode.SUCCESS, token);
 		
-		return respond;
+		return response;
 	}
 
 }

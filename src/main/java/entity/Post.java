@@ -1,29 +1,25 @@
 package entity;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import util.Constant;
+import constant.MongoConstant;
+import util.Util;
 
 public class Post implements JsonEntity {
+	
+	public String id;
 
-	private static final String USERID_KEY = "user_id";
-	private String userId;
+	public String userId;
 
-	private static final String CONTENT_KEY = "content";
-	private String content;
+	public String content;
 
-	private static final String TIME_KEY = "time";
-	private Date createTime;
+	public Date createTime;
 
-	private static final String COMMENTS_KEY = "comments";
-	private List<Comment> listComment;
-
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(Constant.DATE_FORMAT);
+	public List<Comment> listComment;
 
 	public Post() {
 
@@ -41,55 +37,27 @@ public class Post implements JsonEntity {
 	public JSONObject toJsonObject() {
 		JSONObject object = new JSONObject();
 
+		if (this.id != null) {
+			object.put(MongoConstant.COLLECTION_POST.KEY_ID, this.id);
+		}
+		
 		if (this.userId != null) {
-			object.put(USERID_KEY, this.userId);
+			object.put(MongoConstant.COLLECTION_POST.KEY_USER_ID, this.userId);
 		}
 		if (this.content != null) {
-			object.put(CONTENT_KEY, this.content);
+			object.put(MongoConstant.COLLECTION_POST.KEY_CONTENT, this.content);
 		}
 		if (this.createTime != null) {
-			object.put(TIME_KEY, dateFormat.format(createTime));
+			object.put(MongoConstant.COLLECTION_POST.KEY_TIME, Util.formatStringDate(this.createTime));
 		}
 		if (this.listComment != null && this.listComment.size() > 0) {
 			JSONArray commentArray = new JSONArray();
 			for (Comment c : listComment) {
 				commentArray.add(c.toJsonObject());
 			}
-			object.put(COMMENTS_KEY, commentArray);
+			object.put(MongoConstant.COLLECTION_POST.KEY_COMMENTS, commentArray);
 		}
 		return object;
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	public Date getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-
-	public List<Comment> getListComment() {
-		return listComment;
-	}
-
-	public void setListComment(List<Comment> listComment) {
-		this.listComment = listComment;
 	}
 
 }

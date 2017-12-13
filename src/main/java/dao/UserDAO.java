@@ -1,11 +1,13 @@
 package dao;
 
-import java.util.UUID;
+import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 
-import util.Constant;
+import constant.DBConfig;
+import constant.MongoConstant;
 
 public class UserDAO {
 
@@ -13,7 +15,7 @@ public class UserDAO {
 	
 	static {
 		try {
-			collection = MongoConnection.getDemoDB().getCollection(Constant.DB_CONFIG.COLLECTION_USER);
+			collection = MongoConnection.getDemoDB().getCollection(DBConfig.COLLECTION_USER);
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -21,12 +23,19 @@ public class UserDAO {
 	}
 	
 	public static String userAuthenticate(String email, String password) {
-		Long count = collection.count(new BasicDBObject("email", email).append("password", password));
-		String token = null;
-		if (count == 1) {
-			token = UUID.randomUUID().toString();
+		String userId = null;
+		
+		DBObject object = (DBObject) collection.findOne(new BasicDBObject("email", email).append("password", password));
+		if (object != null) {
+			ObjectId objectId = (ObjectId) object.get(MongoConstant.COLLECTION_USER.KEY_ID);
+			userId = objectId.toString();
 		}
-		return token;
+		
+		return userId;
+	}
+	
+	public static void main(String[] args) {
+		UserDAO.userAuthenticate("namtv@ntq-solution.com", "123456");
 	}
 	
 }
