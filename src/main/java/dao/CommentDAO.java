@@ -64,6 +64,20 @@ public class CommentDAO {
 		return true;
 	}
 	
+	public static Comment insertAndGet(Comment c) {
+		if (!PostDAO.isExistPost(c.postId)) {
+			return null;
+		}
+		BasicDBObject o = new BasicDBObject();
+		o.put(COLLECTION_COMMENT.KEY_CONTENT, c.content);
+		o.put(COLLECTION_COMMENT.KEY_TIME, Util.formatStringDate(c.createTime));
+		o.put(COLLECTION_COMMENT.KEY_POST_ID, c.postId);
+		o.put(COLLECTION_COMMENT.KEY_USER_ID, c.userId);
+		collection.insert(o);
+		Comment result = convertFromDBObject(o);
+		return result;
+	}
+	
 	public static int edit(String id, String content) {
 		BasicDBObject query = new BasicDBObject(COLLECTION_COMMENT.KEY_ID, new ObjectId(id));
 		BasicDBObject update = new BasicDBObject(MONGO_COMMON.SET, new BasicDBObject(COLLECTION_COMMENT.KEY_CONTENT, content));

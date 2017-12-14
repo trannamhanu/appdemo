@@ -5,12 +5,14 @@ import java.util.Date;
 import org.json.simple.JSONObject;
 
 import constant.MongoConstant;
+import constant.ResponseConstant.ResponseCode;
 import dao.CommentDAO;
 import entity.Comment;
 import server.request.Request;
+import server.response.ObjectResponse;
 import server.response.Response;
 import server.response.error.BadRequestResponse;
-import server.response.error.SuccessResponse;
+import server.response.error.UnknownErrorResponse;
 import server.session.Session;
 import server.session.SessionManager;
 
@@ -35,8 +37,11 @@ public class AddCommentAPI implements APIAdapter {
 		Session session = SessionManager.get(token);
 		c.userId = session.userId;
 
-		CommentDAO.insert(c);
-		response = new SuccessResponse();
+		Comment result = CommentDAO.insertAndGet(c);
+		if (result == null) {
+			return new UnknownErrorResponse();
+		}
+		response = new ObjectResponse<Comment>(ResponseCode.SUCCESS, result);
 
 		return response;
 	}

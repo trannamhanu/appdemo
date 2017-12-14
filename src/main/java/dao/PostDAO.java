@@ -66,6 +66,12 @@ public class PostDAO {
 		Post p = convertFromDBObject(o);
 		return p;
 	}
+	
+	public static boolean isExistPost(String postId) {
+		Long count = collection.count(new BasicDBObject(COLLECTION_POST.KEY_ID, new ObjectId(postId)));
+		if (count != 1) {return false;}
+		return true;
+	}
 
 	public static int edit(String id, String content) {
 		BasicDBObject query = new BasicDBObject(COLLECTION_POST.KEY_ID, new ObjectId(id));
@@ -81,6 +87,16 @@ public class PostDAO {
 		o.put(COLLECTION_POST.KEY_TIME, Util.formatStringDate(post.createTime));
 		collection.insert(o);
 		return true;
+	}
+	
+	public static Post insertAndGet(Post post) {
+		BasicDBObject o = new BasicDBObject();
+		o.put(COLLECTION_POST.KEY_USER_ID, post.userId);
+		o.put(COLLECTION_POST.KEY_CONTENT, post.content);
+		o.put(COLLECTION_POST.KEY_TIME, Util.formatStringDate(post.createTime));
+		collection.insert(o);
+		Post p = convertFromDBObject(o);
+		return p;
 	}
 	
 	public static int delete(String id) {
