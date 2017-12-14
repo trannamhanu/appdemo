@@ -1,14 +1,17 @@
-package entity;
+package entity.response;
 
 import java.util.Date;
+import java.util.List;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import constant.MongoConstant.COLLECTION_POST;
+import entity.Comment;
+import entity.JsonEntity;
 import util.Util;
 
-public class Post implements JsonEntity {
-
+public class PostEntityResponse implements JsonEntity {
 	public String id;
 
 	public String userId;
@@ -17,16 +20,7 @@ public class Post implements JsonEntity {
 
 	public Date createTime;
 
-	public Post() {
-
-	}
-
-	public Post(String userId, String content, Date createTime) {
-		super();
-		this.userId = userId;
-		this.content = content;
-		this.createTime = createTime;
-	}
+	public List<Comment> listComments;
 
 	@SuppressWarnings("unchecked")
 	public JSONObject toJsonObject() {
@@ -44,6 +38,14 @@ public class Post implements JsonEntity {
 		}
 		if (this.createTime != null) {
 			object.put(COLLECTION_POST.KEY_TIME, Util.formatStringDate(this.createTime));
+		}
+		if (listComments != null) {
+			JSONArray array = new JSONArray();
+			for (Comment c : listComments) {
+				JSONObject o = c.toJsonObject();
+				array.add(o);
+			}
+			object.put(COLLECTION_POST.KEY_COMMENTS, array);
 		}
 		return object;
 	}

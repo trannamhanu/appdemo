@@ -9,6 +9,8 @@ public class ResponseConstant {
 	
 	public class ResponseCode {
 		public static final int SUCCESS = 0;
+		public static final String SUCCESS_DETAIL = "success";
+		
 		public static final int BAD_REQUEST_ERROR = 1;
 		public static final String BAD_REQUEST_ERROR_DETAIL = "Bad request";
 		
@@ -20,5 +22,8 @@ public class ResponseConstant {
 		
 		public static final int AUTHEN_ERROR = 4;
 		public static final String AUTHEN_ERROR_DETAIL = "Authentication failed";
+		
+		public static final int UNAUTHORIZED_ERROR = 5;
+		public static final String UNAUTHORIZED_ERROR_DETAIL = "Unauthorized";
 	}
 }

@@ -1,9 +1,8 @@
 package server.api;
 
-import org.json.simple.JSONObject;
-
+import server.request.Request;
 import server.response.Response;
 
 public interface APIAdapter {
-	public Response process(JSONObject json);
+	public Response process(Request request);
 }

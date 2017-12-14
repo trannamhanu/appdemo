@@ -12,5 +12,11 @@ public class RequestConstant {
 	public static final String POST_SIZE_KEY = "size";
 	public static final String POST_ORDERBY_KEY = "order_by";
 	public static final String POST_ORDERKEY_KEY = "order_key";
+	public static final String POST_ORDERKEY_TIME = "time";
+	public static final String POST_ORDERKEY_COMMENTS = "comments";
 	public static final String POST_ORDERRULE_KEY = "order_rule";
+	public static final int ORDER_RULE_ASC = 1;
+	public static final int ORDER_RULE_DESC = -1;
+	
+	public static final String POST_CONTENT_KEY = "content";
 }

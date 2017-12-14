@@ -2,7 +2,7 @@ package entity;
 
 import org.json.simple.JSONObject;
 
-import constant.MongoConstant;
+import constant.MongoConstant.COLLECTION_USER;
 
 public class User implements JsonEntity {
 
@@ -27,13 +27,13 @@ public class User implements JsonEntity {
 	public JSONObject toJsonObject() {
 		JSONObject object = new JSONObject();
 		if (this.name != null) {
-			object.put(MongoConstant.COLLECTION_USER.KEY_NAME, this.name);
+			object.put(COLLECTION_USER.KEY_NAME, this.name);
 		}
 		if (this.email != null) {
-			object.put(MongoConstant.COLLECTION_USER.KEY_EMAIL, this.email);
+			object.put(COLLECTION_USER.KEY_EMAIL, this.email);
 		}
 		if (this.password != null) {
-			object.put(MongoConstant.COLLECTION_USER.KEY_PASSWORD, this.password);
+			object.put(COLLECTION_USER.KEY_PASSWORD, this.password);
 		}
 		return object;
 	}

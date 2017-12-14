@@ -6,45 +6,41 @@ import org.json.simple.JSONObject;
 
 import constant.CommonConstant;
 import constant.RequestConstant;
-import constant.ResponseConstant;
+import constant.ResponseConstant.ResponseCode;
 import dao.UserDAO;
-import server.response.ErrorResponse;
+import server.request.Request;
 import server.response.Response;
 import server.response.StringResponse;
+import server.response.error.AuthenFailedResponse;
+import server.response.error.BadRequestResponse;
 import server.session.Session;
 import server.session.SessionManager;
 
 public class AuthenAPI implements APIAdapter {
 
-	public Response process(JSONObject json) {
-		
-		JSONObject query = (JSONObject) json.get(RequestConstant.QUERY_KEY);
-		if (query == null) {
-			return new ErrorResponse(ResponseConstant.ResponseCode.BAD_REQUEST_ERROR,
-					ResponseConstant.ResponseCode.BAD_REQUEST_ERROR_DETAIL);
-		}
-		
+	public Response process(Request request) {
+
+		JSONObject query = request.query;
+
 		String email = (String) query.get(RequestConstant.EMAIL_KEY);
 		String pass = (String) query.get(RequestConstant.PASSWORD_KEY);
 		if (email == null || pass == null) {
-			return new ErrorResponse(ResponseConstant.ResponseCode.BAD_REQUEST_ERROR,
-					ResponseConstant.ResponseCode.BAD_REQUEST_ERROR_DETAIL);
+			return new BadRequestResponse();
 		}
-		
-		//check user and generate token
+
+		// check user and generate token
 		String userId = UserDAO.userAuthenticate(email, pass);
 		String token = null;
 		if (userId == null) {
-			return new ErrorResponse(ResponseConstant.ResponseCode.AUTHEN_ERROR,
-					ResponseConstant.ResponseCode.AUTHEN_ERROR_DETAIL);
+			return new AuthenFailedResponse();
 		} else {
 			token = UUID.randomUUID().toString();
 			Session session = new Session(token, userId, System.currentTimeMillis() + CommonConstant.SESSION_TIMEOUT);
 			SessionManager.put(session);
 		}
-		
-		StringResponse response = new StringResponse(ResponseConstant.ResponseCode.SUCCESS, token);
-		
+
+		StringResponse response = new StringResponse(ResponseCode.SUCCESS, token);
+
 		return response;
 	}
 

@@ -15,12 +15,15 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import constant.Api;
 import constant.RequestConstant;
-import constant.ResponseConstant;
 import server.api.APIAdapter;
 import server.api.APIManager;
-import server.response.ErrorResponse;
 import server.response.Response;
+import server.response.error.AuthenFailedResponse;
+import server.response.error.BadRequestResponse;
+import server.response.error.UnknownAPIResponse;
+import server.session.SessionManager;
 
 public class Handler extends AbstractHandler {
 
@@ -42,27 +45,42 @@ public class Handler extends AbstractHandler {
 		try {
 			inputObject = (JSONObject) parser.parse(inputBody);
 		} catch (ParseException e) {
-			System.out.println("Error parsing json");
-			response = new ErrorResponse(ResponseConstant.ResponseCode.BAD_REQUEST_ERROR,
-					ResponseConstant.ResponseCode.BAD_REQUEST_ERROR_DETAIL);
-			writeResponse(response, servletResponse);
+			sendBadRequestResponse(servletResponse);
 			return;
 		}
 
+		//check api
 		String api = (String) inputObject.get(RequestConstant.API_KEY);
 		if (api == null) {
-			response = new ErrorResponse(ResponseConstant.ResponseCode.BAD_REQUEST_ERROR,
-					ResponseConstant.ResponseCode.BAD_REQUEST_ERROR_DETAIL);
-		} else {
-			APIAdapter adapter = APIManager.getAPI(api);
-			if (adapter == null) {
-				response = new ErrorResponse(ResponseConstant.ResponseCode.UNKNOWN_API,
-						ResponseConstant.ResponseCode.UNKNOWN_API_DETAIL);
-			} else {
-				response = adapter.process(inputObject);
+			sendBadRequestResponse(servletResponse);
+			return;
+		}
+		
+		APIAdapter adapter = APIManager.getAPI(api);
+		if (adapter == null) {
+			sendUnknownAPIResponse(servletResponse);
+			return;
+		}
+		
+		
+		//check token
+		String token = (String) inputObject.get(RequestConstant.TOKEN_KEY);
+		if (!api.equals(Api.AUTHEN_USER)) {
+			if (token == null || !SessionManager.validateSession(token)) {
+				sendAuthenFailedResponse(servletResponse);
+				return;
 			}
 		}
-
+		
+		//check query
+		JSONObject query = (JSONObject) inputObject.get(RequestConstant.QUERY_KEY);
+		if (query == null) {
+			sendBadRequestResponse(servletResponse);
+			return;
+		}
+			
+		server.request.Request request = new server.request.Request(api, token, query);
+		response = adapter.process(request);
 		writeResponse(response, servletResponse);
 
 	}
@@ -73,5 +91,28 @@ public class Handler extends AbstractHandler {
 		out.close();
 		out.flush();
 	}
+	
+	public void sendBadRequestResponse(HttpServletResponse servletResponse) {
+		try {
+			writeResponse(new BadRequestResponse(), servletResponse);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendUnknownAPIResponse(HttpServletResponse servletResponse) {
+		try {
+			writeResponse(new UnknownAPIResponse(), servletResponse);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
+	public void sendAuthenFailedResponse(HttpServletResponse servletResponse) {
+		try {
+			writeResponse(new AuthenFailedResponse(), servletResponse);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

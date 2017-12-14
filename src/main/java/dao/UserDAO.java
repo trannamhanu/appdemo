@@ -34,8 +34,4 @@ public class UserDAO {
 		return userId;
 	}
 	
-	public static void main(String[] args) {
-		UserDAO.userAuthenticate("namtv@ntq-solution.com", "123456");
-	}
-	
 }

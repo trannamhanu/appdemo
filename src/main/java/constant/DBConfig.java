@@ -10,4 +10,5 @@ public class DBConfig {
 	
 	public static final String COLLECTION_USER = "user";
 	public static final String COLLECTION_POST = "post";
+	public static final String COLLECTION_COMMENT = "comment";
 }
