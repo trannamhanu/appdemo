@@ -1,0 +1,14 @@
+[
+
+	{"api": "authen","query": {"email": "namtv@ntq-solution.com","password": "123456"}},
+	
+	{ "api": "create_post", "token": "token", "query": {"content": "content"} },
+	{ "api": "find_post", "token": "token", "query": {"size": 0, "page": 0, "order_by": {"order_key": "time/comments", "order_rule": -1}}},
+	{ "api": "edit_post", "token": "token", "query": { "_id": "id", "content": "content" } },
+	{ "api": "delete_post", "token": "token", "query": { "_id": "id"} },
+	
+	{ "api": "add_comment", "token": "token", "query": { "post_id": "id", "content": "content" } },
+	{ "api": "edit_comment", "token": "token", "query": { "_id": "id", "content": "content" } },
+	{ "api": "delete_comment", "token": "token", "query": { "_id": "id" } }
+
+]
